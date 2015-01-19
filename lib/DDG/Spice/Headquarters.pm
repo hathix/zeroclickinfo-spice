@@ -9,7 +9,16 @@ spice wrap_jsonp_callback => 1;
 
 handle remainder => sub {
     if($_){
-        return $_;
+        # uppercase each word in string for better Wikipedia compatibility
+        @words = split ' ', $_;
+        @ucwords = ();
+        foreach $word (@words) {
+            push @ucwords, ucfirst $word;
+        }
+
+        $uc = join ' ', @ucwords;
+        
+        return $uc;
     }
     return;
 };
