@@ -96,9 +96,10 @@
         var cleanse = function(str){
             // get rid of <ref>'s
             str = str.replace(/<ref[\S\s]+<\/ref>/g, "");
+            str = str.replace(/<ref[\S\s]+\/>/g, "");            
             
             // get rid of {{cite}}'s
-            str = str.replace(/{{cite[^}]+}}/g, "");            
+            str = str.replace(/{{[^}]+}}/g, "");            
 
             // get rid of any {{nowrap|...}}} stuff
             str = str.replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group){

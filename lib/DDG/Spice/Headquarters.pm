@@ -8,7 +8,18 @@ spice to => 'http://en.wikipedia.org/w/api.php?action=query&prop=revisions&conti
 spice wrap_jsonp_callback => 1;
 
 handle remainder => sub {
-    return $_ if $_;
+    if $_ {
+        # uppercase each word in string for better Wikipedia compatibility
+        @words = split '', $_;
+        @ucwords = ();
+        foreach $word (@words) {
+            push @ucwords, ucfirst $word;
+        }
+
+        $uc = join ' ', @ucwords;
+        
+        return $uc;
+    }
     return;
 };
 
