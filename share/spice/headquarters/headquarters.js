@@ -1,18 +1,16 @@
 (function (env) {
     "use strict";
     env.ddg_spice_headquarters = function(api_result){
-
-        var fail = function(){
-            return Spice.failed('headquarters');
-        }
         
         // grab content
-        var query = api_result.query || return Spice.failed('headquarters');
-        var pages = query.pages || return Spice.failed('headquarters');
+        var query = api_result.query;
+        if(!query) return Spice.failed('headquarters');
+        var pages = query.pages;
+        if(!pages) return Spice.failed('headquarters');
 
         // grab first page
         var page;
-        for(pageId in pages){
+        for(var pageId in pages){
           page = pages[pageId];
           break;
         }
@@ -21,10 +19,14 @@
             return Spice.failed('headquarters');
         }
         
-        var companyName = page.title || return Spice.failed('headquarters');
-        var revisions = page.revisions || return Spice.failed('headquarters');
-        var revision = revisions[0] || return Spice.failed('headquarters');
-        var content = revision["*"] || return Spice.failed('headquarters');
+        var companyName = page.title;
+        if(!companyName) return Spice.failed('headquarters');
+        var revisions = page.revisions;
+        if(!revisions) return Spice.failed('headquarters');
+        var revision = revisions[0];
+        if(!revision) return Spice.failed('headquarters');
+        var content = revision["*"];
+        if(!content) return Spice.failed('headquarters');
  
         // find each set of {{ ... }}
         var stack = []; 
@@ -107,7 +109,7 @@
             });
 
             return str;
-        }
+        };
 
         var location = null;
         // walk down preference gradient until location found
