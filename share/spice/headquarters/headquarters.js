@@ -1,6 +1,7 @@
 (function (env) {
     "use strict";
     env.ddg_spice_headquarters = function(api_result){
+        console.log("api", api_result);
         
         // grab content
         var query = api_result.query;
@@ -31,20 +32,20 @@
         // find each set of {{ ... }}
         var stack = []; 
         var sets = [];
-        var length = text.length;
+        var length = content.length;
 
-        for (var i = 0; i<length; /* nothing */){
-          if(text.charAt(i) + text.charAt(i+1) === "{{"){
+        for (var i = 0; i < length; /* nothing */){
+          if (content.charAt(i) + content.charAt(i+1) === "{{"){
             // beginning of a set
             stack.push(i);
             i += 2;
           }
-          else if(text.charAt(i) + text.charAt(i-1) === "}}"){
+          else if(content.charAt(i) + content.charAt(i-1) === "}}"){
             // found the ending of a set; start of it was stack.pop()
             var start = stack.pop();
             var end = i;
 
-            var set = text.substring(start, end+1);
+            var set = content.substring(start, end+1);
             sets.push(set);
 
             i += 2;
@@ -55,13 +56,14 @@
           }
         }
 
-        // find infobox, which is the set that begins with harbinger
-        var harbinger = "{{Infobox company";
+        // find the first infobox, which is the set that begins with the harbinger
+        var harbinger = "{{Infobox";
         var infoboxText = null;
         for (var i = 0; i < sets.length; i++){
             var set = sets[i];
             if (set.indexOf(harbinger) === 0){
                 infoboxText = set;
+                break;
             }
         }
 
@@ -87,14 +89,22 @@
         }
 
         /* ** BEGIN HEADQUARTERS-SPECIFIC CODE ** */
+        
+        console.log("info", infobox);
 
         // Cleans up a Wikipedia-formatted string, which can contain [[ ... ]] and <ref>'s.
         var cleanse = function(str){
             // get rid of <ref>'s
-            str = str.replace(/<ref>[\S\s]+<\/ref>/g, "");
+            str = str.replace(/<ref[\S\s]+<\/ref>/g, "");
+            
+            // get rid of {{cite}}'s
+            str = str.replace(/{{cite[^}]+}}/g, "");            
 
-            // get rid of any <br />'s
-            str = str.replace(/<br *\/?>/g, "");
+            // get rid of any {{nowrap|...}}} stuff
+            str = str.replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group){
+                return group;
+            });
+           
 
             // replace stuff in [[ ... ]] with original
             str = str.replace(/\[\[([^\]]+)]]/g, function(match, group){
@@ -142,7 +152,8 @@
             
             var data = {
                 name: companyName,
-                headquarters: location
+                headquarters: location,
+                mapUrl: 'https://www.google.com/maps?q=' + location
             };
 
             Spice.add({
