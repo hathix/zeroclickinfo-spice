@@ -7,8 +7,8 @@
         }
         
         // grab content
-        var query = api_result.query || fail();
-        var pages = query.pages || fail();
+        var query = api_result.query || return Spice.failed('headquarters');
+        var pages = query.pages || return Spice.failed('headquarters');
 
         // grab first page
         var page;
@@ -18,13 +18,13 @@
         }
         
         if (!page) {
-            fail();
+            return Spice.failed('headquarters');
         }
         
-        var companyName = page.title || fail();
-        var revisions = page.revisions || fail();
-        var revision = revisions[0] || fail();
-        var content = revision["*"] || fail();
+        var companyName = page.title || return Spice.failed('headquarters');
+        var revisions = page.revisions || return Spice.failed('headquarters');
+        var revision = revisions[0] || return Spice.failed('headquarters');
+        var content = revision["*"] || return Spice.failed('headquarters');
  
         // find each set of {{ ... }}
         var stack = []; 
@@ -65,7 +65,7 @@
 
         // must have infobox
         if (!infoboxText){
-            fail();
+            return Spice.failed('headquarters');
         }
 
         // split infobox into items
@@ -131,7 +131,7 @@
         }
         else {
             // nothing found
-            fail();
+            return Spice.failed('headquarters');
         }
 
         // answer = location
@@ -146,8 +146,6 @@
             Spice.add({
                 id: "headquarters",
                 name: "Headquarters",
-                
-                // CHANGE BELOW
                 data: data,
                 meta: {
                     // sourceName: "Wikipedia",
@@ -163,7 +161,7 @@
             });
         }
         else {
-            fail();
+            return Spice.failed('headquarters');
         }
     };
 }(this));
