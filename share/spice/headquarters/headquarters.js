@@ -33,9 +33,9 @@
         // use a stack to store the indices of the open {{'s
         // each }} will remove the most recent {{ (the last item added to the queue)
         // the actual text of the sets is stored in the sets array
-        var stack = [];
-        var sets = [];
-        var length = content.length;
+        var stack = [],
+            sets = [],
+            length = content.length;
 
         for (var i = 0; i < length; /* no update since we do it manually */ ) {
             if (content.charAt(i) + content.charAt(i + 1) === "{{") {
@@ -58,8 +58,8 @@
         }
 
         // find the first infobox, which is a set that begins with {{Infobox
-        var harbinger = "{{Infobox";
-        var infoboxText = null;
+        var harbinger = "{{Infobox",
+            infoboxText = null;
         for (var i = 0; i < sets.length; i++) {
             var set = sets[i];
             if (set.indexOf(harbinger) === 0) {
@@ -75,11 +75,11 @@
 
         // split infobox into items (name, location, date founded, etc.)
         // these are {key: value} pairs stored in the infobox object
-        var items = infoboxText.split("\n");
-        var infobox = {}; // each item is { title: text }
+        var items = infoboxText.split("\n"),
+            infobox = {}; // each item is { title: text }
         for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            var divide = item.indexOf("=");
+            var item = items[i],
+                divide = item.indexOf("=");
             if (divide > -1) {
                 var left = item.substring(0, divide);
                 var right = item.substring(divide + 1);
@@ -95,34 +95,35 @@
         // Cleans up a Wikipedia-formatted string, which can contain [[ ... ]] and <ref>'s.
         var cleanse = function(str) {
             // get rid of <ref>'s
-            str = str.replace(/<ref[\S\s]+<\/ref>/g, "");
-            str = str.replace(/<ref[\S\s]+\/>/g, "");
+            str = str.replace(/<ref[\S\s]+<\/ref>/g, "")
+                .replace(/<ref[\S\s]+\/>/g, "")
+            
+                // get rid of {{cite}}'s
+                .replace(/{{[^}]+}}/g, "")
 
-            // get rid of {{cite}}'s
-            str = str.replace(/{{[^}]+}}/g, "");
-
-            // get rid of any {{nowrap|...}}} stuff
-            str = str.replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group) {
-                return group;
-            });
-
-            // get rid of <br>'s and replace with comma
-            str = str.replace(/,? *<br *\/?>/g, ", ");
-            // BUT if the line begins with parens, get rid of the comma.
-            // This tends to happen because we strip <br>'s, which messes up stuff like
-            // "New York<br>(US Headquarters)"
-            str = str.replace(/, \(/, "(");
-
-            // replace stuff in [[ ... ]] with original (i.e. de-linkify)
-            str = str.replace(/\[\[([^\]]+)]]/g, function(match, group) {
-                // if group has a |, return what's on the right side (that's the "display" version
-                var barIndex = group.indexOf("|");
-                if (barIndex > -1) {
-                    return group.substring(barIndex + 1).trim();
-                } else {
+                // get rid of any {{nowrap|...}}} stuff
+                .replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group) {
                     return group;
-                }
-            });
+                })
+
+                // get rid of <br>'s and replace with comma
+                .replace(/,? *<br *\/?>/g, ", ")
+            
+                // BUT if the line begins with parens, get rid of the comma.
+                // This tends to happen because we strip <br>'s, which messes up stuff like
+                // "New York<br>(US Headquarters)"
+                .replace(/, \(/, "(")
+
+                // replace stuff in [[ ... ]] with original (i.e. de-linkify)
+                .replace(/\[\[([^\]]+)]]/g, function(match, group) {
+                    // if group has a |, return what's on the right side (that's the "display" version
+                    var barIndex = group.indexOf("|");
+                    if (barIndex > -1) {
+                        return group.substring(barIndex + 1).trim();
+                    } else {
+                        return group;
+                    }
+                });
 
             return str;
         };
