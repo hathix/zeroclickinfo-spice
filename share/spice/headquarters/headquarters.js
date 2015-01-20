@@ -72,7 +72,7 @@
             return Spice.failed('headquarters');
         }
 
-        // split infobox into items
+        // split infobox into items (name, location, date founded, etc.)
         var items = infoboxText.split("\n");
         var infobox = {}; // each item is { title: text }
         for (var i = 0; i < items.length; i++){
@@ -105,7 +105,9 @@
             str = str.replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group){
                 return group;
             });
-           
+            
+            // get rid of br's
+            str = str.replace(/,? *<br *\/?>/g, ", ");
 
             // replace stuff in [[ ... ]] with original
             str = str.replace(/\[\[([^\]]+)]]/g, function(match, group){
