@@ -8,7 +8,9 @@ spice to => 'http://en.wikipedia.org/w/api.php?action=query&prop=revisions&conti
 spice wrap_jsonp_callback => 1;
 
 handle remainder => sub {
-    return $_ if $_;
+    if($_){
+        return $_;
+    }
     return;
 };
 
