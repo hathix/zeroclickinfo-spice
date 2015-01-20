@@ -13,6 +13,7 @@ primary_example_queries "headquarters of duckduckgo", "twitter headquarters";
 secondary_example_queries "facebook hq";
 category "geography";
 topics "everyday", "geography";
+code_url "https://github.com/hathix/zeroclickinfo-spice/blob/master/lib/DDG/Spice/Headquarters.pm";
 
 attribution twitter => ["https://twitter.com/hathix", "Neel Mehta"],
             github  => ["https://github.com/hathix", "Neel Mehta"],

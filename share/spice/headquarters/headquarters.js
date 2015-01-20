@@ -5,9 +5,13 @@
         // drill down the api_result to get at the raw wikitext content
         // it's at api_result.query.pages.{FIRST CHILD}.revisions[0]["*"]
         var query = api_result.query;
-        if (!query) return Spice.failed('headquarters');
+        if (!query) {
+            return Spice.failed('headquarters');
+        }
         var pages = query.pages;
-        if (!pages) return Spice.failed('headquarters');
+        if (!pages) {
+            return Spice.failed('headquarters');
+        }
 
         // the page has some random id, but it's the only child of pages
         var page;
