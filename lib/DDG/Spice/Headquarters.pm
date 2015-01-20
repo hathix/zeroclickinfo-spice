@@ -10,13 +10,13 @@ spice wrap_jsonp_callback => 1;
 handle remainder => sub {
     if($_){
         # uppercase each word in string for better Wikipedia compatibility
-        @words = split ' ', $_;
-        @ucwords = ();
+        my @words = split ' ', $_;
+        my @ucwords = ();
         foreach $word (@words) {
             push @ucwords, ucfirst $word;
         }
 
-        $uc = join ' ', @ucwords;
+        my $uc = join ' ', @ucwords;
         
         return $uc;
     }
