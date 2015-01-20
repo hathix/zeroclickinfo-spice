@@ -21,13 +21,21 @@
 
         // while we're at it, grab the company's name, which is the wikipedia page title
         var companyName = page.title;
-        if (!companyName) return Spice.failed('headquarters');
+        if (!companyName) {
+            return Spice.failed('headquarters');
+        }
         var revisions = page.revisions;
-        if (!revisions) return Spice.failed('headquarters');
+        if (!revisions) {
+            return Spice.failed('headquarters');
+        }
         var revision = revisions[0];
-        if (!revision) return Spice.failed('headquarters');
+        if (!revision) {
+            return Spice.failed('headquarters');
+        }
         var content = revision["*"];
-        if (!content) return Spice.failed('headquarters');
+        if (!content) {
+            return Spice.failed('headquarters');
+        }
 
         // find each set of {{ ... }}
         // use a stack to store the indices of the open {{'s
@@ -41,12 +49,12 @@
             if (content.charAt(i) + content.charAt(i + 1) === "{{") {
                 // beginning of a set
                 stack.push(i);
+
                 i += 2;
             } else if (content.charAt(i) + content.charAt(i - 1) === "}}") {
                 // found the ending of a set; start of it was stack.pop()
                 var start = stack.pop();
                 var end = i;
-
                 var set = content.substring(start, end + 1);
                 sets.push(set);
 
@@ -97,33 +105,33 @@
             // get rid of <ref>'s
             str = str.replace(/<ref[\S\s]+<\/ref>/g, "")
                 .replace(/<ref[\S\s]+\/>/g, "")
-            
-                // get rid of {{cite}}'s
-                .replace(/{{[^}]+}}/g, "")
 
-                // get rid of any {{nowrap|...}}} stuff
-                .replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group) {
+            // get rid of {{cite}}'s
+            .replace(/{{[^}]+}}/g, "")
+
+            // get rid of any {{nowrap|...}}} stuff
+            .replace(/{{ *nowrap *\| *([^}]+)}}/g, function(match, group) {
+                return group;
+            })
+
+            // get rid of <br>'s and replace with comma
+            .replace(/,? *<br *\/?>/g, ", ")
+
+            // BUT if the line begins with parens, get rid of the comma.
+            // This tends to happen because we strip <br>'s, which messes up stuff like
+            // "New York<br>(US Headquarters)"
+            .replace(/, \(/, "(")
+
+            // replace stuff in [[ ... ]] with original (i.e. de-linkify)
+            .replace(/\[\[([^\]]+)]]/g, function(match, group) {
+                // if group has a |, return what's on the right side (that's the "display" version
+                var barIndex = group.indexOf("|");
+                if (barIndex > -1) {
+                    return group.substring(barIndex + 1).trim();
+                } else {
                     return group;
-                })
-
-                // get rid of <br>'s and replace with comma
-                .replace(/,? *<br *\/?>/g, ", ")
-            
-                // BUT if the line begins with parens, get rid of the comma.
-                // This tends to happen because we strip <br>'s, which messes up stuff like
-                // "New York<br>(US Headquarters)"
-                .replace(/, \(/, "(")
-
-                // replace stuff in [[ ... ]] with original (i.e. de-linkify)
-                .replace(/\[\[([^\]]+)]]/g, function(match, group) {
-                    // if group has a |, return what's on the right side (that's the "display" version
-                    var barIndex = group.indexOf("|");
-                    if (barIndex > -1) {
-                        return group.substring(barIndex + 1).trim();
-                    } else {
-                        return group;
-                    }
-                });
+                }
+            });
 
             return str;
         };
